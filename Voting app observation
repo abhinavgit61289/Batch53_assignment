@@ -1,0 +1,67 @@
+[root@ip-172-31-24-234 k8s-specifications]# kubectl apply -f .
+deployment.apps/db created
+service/db created
+deployment.apps/redis created
+service/redis created
+deployment.apps/result created
+service/result created
+deployment.apps/vote created
+service/vote created
+deployment.apps/worker created
+
+[root@ip-172-31-24-234 k8s-specifications]# kubectl get deploy
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+db       1/1     1            1           39s
+redis    1/1     1            1           39s
+result   1/1     1            1           39s
+vote     1/1     1            1           39s
+worker   1/1     1            1           38s
+
+[root@ip-172-31-24-234 k8s-specifications]# kubectl get rs
+NAME                DESIRED   CURRENT   READY   AGE
+db-b54cd94f4        1         1         1       55s
+redis-868d64d78     1         1         1       55s
+result-5d57b59f4b   1         1         1       55s
+vote-94849dc97      1         1         1       55s
+worker-dd46d7584    1         1         1       54s
+
+
+[root@ip-172-31-24-234 k8s-specifications]# kubectl get po -o wide
+NAME                      READY   STATUS    RESTARTS   AGE   IP               NODE                                               NOMINATED NODE   READINESS GATES
+db-b54cd94f4-84fkh        1/1     Running   0          70s   192.168.134.6    ip-172-31-23-173.ap-southeast-1.compute.internal   <none>           <none>
+redis-868d64d78-kls87     1/1     Running   0          70s   192.168.134.10   ip-172-31-23-173.ap-southeast-1.compute.internal   <none>           <none>
+result-5d57b59f4b-9ntdl   1/1     Running   0          70s   192.168.134.8    ip-172-31-23-173.ap-southeast-1.compute.internal   <none>           <none>
+vote-94849dc97-sbvmn      1/1     Running   0          70s   192.168.134.11   ip-172-31-23-173.ap-southeast-1.compute.internal   <none>           <none>
+worker-dd46d7584-nnkqq    1/1     Running   0          69s   192.168.134.16   ip-172-31-23-173.ap-southeast-1.compute.internal   <none>           <none>
+
+
+
+
+[root@ip-172-31-24-234 k8s-specifications]# kubectl get svc
+NAME     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+db       ClusterIP   10.99.176.74    <none>        5432/TCP         85s
+redis    ClusterIP   10.111.161.64   <none>        6379/TCP         85s
+result   NodePort    10.109.36.78    <none>        5001:31003/TCP   85s
+vote     NodePort    10.103.65.93    <none>        5000:31002/TCP   84s
+
+
+
+1. On deleting vote pod, pod id and ip got changed in backend. No interupption in front end ,only pod id showing different on vote page. 
+
+2. Same observation for worker pod on backend. vote pod id is same on vote page.
+
+
+3. On deleting db pod, result and worker containers got restarted(Error->Crashloopback->Running) with exit code 1 which means application error.
+IP and pod id got changed in backend for db pod.
+During result and worker container restart, if trying to change the vote from vote app, then result app not reflecting updated vote. Once both container are running, then vote updated on result page by refreshing the web page.
+
+
+
+
+
+ 
+
+
+
+
+
